@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 确保有一个meta标签来存储CSRF令牌 -->
+    <meta name="_csrf" th:content="${_csrf.token}"></meta>
+    <title>RN - 标记我的生活</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.6/css/bootstrap.min.css"
+          th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- 引入 Font Awesome -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          th:href="@{/css/font-awesome.min.css}" rel="stylesheet">
+
+    <!-- 自定义样式 -->
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* 分类导航 */
+        .category-nav {
+            background-color: white;
+            padding: 8px 0;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-item {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-right: 8px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .category-item.active {
+            background-color: #ff2442;
+            color: white;
+        }
+
+        /* 笔记卡片网格 */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+            padding: 8px;
+        }
+
+        .note-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .note-image-container {
+            position: relative;
+            padding-bottom: 100%;
+            /* 保持正方形比例 */
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .note-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .note-tag {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .note-content {
+            padding: 8px;
+        }
+
+        .note-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .note-author {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .author-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .author-name {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .note-author-stats {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .note-stats {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .stat-item {
+            margin-right: 12px;
+        }
+
+        /* 加载更多 */
+        .load-more {
+            text-align: center;
+            padding: 16px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 没有更多 */
+        .no-more {
+            text-align: center;
+            padding: 0 0 50px 0;
+            color: #666;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            background-color: #f5f5f5;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: #ff2442;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .nav-text {
+            font-size: 10px;
+        }
+
+        /* 去掉下划线 */
+        a {
+            text-decoration: none;
+        }
+
+        /* 瀑布流布局 */
+        .masonry {
+            column-count: 4;
+            column-gap: 1em;
+            padding: 10;
+        }
+        .masonry-item {
+            display: inline-block;
+            margin: 0 0 1.5em;
+            width: 100%;
+        }
+
+        .masonry-note-image {
+            border-radius: 12px;
+            width: 100%;
+            height: auto;
+        }
+
+        @media only screen and (max-width: 320px) {
+            .masonry {
+                column-count: 1;
+            }
+        }
+
+        @media only screen and (min-width: 321px) and (max-width: 768px){
+            .masonry {
+                column-count: 2;
+            }
+        }
+        @media only screen and (min-width: 769px) and (max-width: 1200px){
+            .masonry {
+                column-count: 3;
+            }
+        }
+        @media only screen and (min-width: 1201px) {
+            .masonry {
+                column-count: 4;
+            }
+        }
+
+        /* 点赞按钮样式 */
+        .liked {
+            color: #ff2442;
+        }
+
+        .like-btn {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<!-- 顶部导航栏 -->
+<header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/" th:href="@{/}">
+                <img src="../static/images/rn_logo.png" th:src="@{/images/rn_logo.png}" alt="RN" height="24">
+            </a>
+
+            <!-- 搜索框-->
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="搜索感兴趣的内容" aria-label="Search"
+                           id="searchInput">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                        搜索
+                    </button>
+                </div>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                </ul>
+
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-target="dropdown" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            [[${#authentication.name}]]
+                        </a>
+
+                        <ul class="dropdown-menu" id="dropdown">
+                            <li class="dropdown-item">
+                                <a class="nav-link" href="/user/profile" th:href="@{/user/profile}">个人资料</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <form th:action="@{/logout}" action="/logout" method="post">
+                                    <button type="submit" class="nav-link">退出登录</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- 分类导航 -->
+<header>
+    <div class="container">
+        <div class="category-item active">推荐</div>
+        <div class="category-item">穿搭</div>
+        <div class="category-item">美食</div>
+        <div class="category-item">彩妆</div>
+        <div class="category-item">影视</div>
+        <div class="category-item">职场</div>
+        <div class="category-item">情感</div>
+        <div class="category-item">家居</div>
+        <div class="category-item">游戏</div>
+        <div class="category-item">旅行</div>
+        <div class="category-item">健身</div>
+    </div>
+</header>
+
+
+<body>
+<main>
+    <div class="container">
+        <!-- 笔记卡片网格 -->
+        <!--<div class="notes-grid" id="notesGrid">-->
+        <div class="masonry" id="notesGrid">
+            <!-- 笔记卡片是通过JavaScript动态生成 -->
+        </div>
+        <!-- 加载更多内容提示 -->
+        <div class="load-more" id="loadMore">
+            <i class="fa fa-spinner fa-spin"></i>加载更多
+        </div>
+        <!-- 没有更多内容提示 -->
+        <div class="no-more" id="noMoreContent">
+            <p>已经到底啦~</p>
+        </div>
+    </div>
+</main>
+<footer>
+    <!-- 底部导航栏 -->
+    <div class="container bottom-nav">
+        <div class="nav-item active" onclick="navigateTo('home')">
+            <i class="fa fa-home nav-icon"></i>
+            <span class="nav-text">首页</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('discover')">
+            <i class="fa fa-compass nav-icon"></i>
+            <span class="nav-text">发现</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('publish')">
+            <i class="fa fa-plus nav-icon"></i>
+            <span class="nav-text">发布</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('message')">
+            <i class="fa fa-comment-o nav-icon"></i>
+            <span class="nav-text">消息</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('profile')">
+            <i class="fa fa-user-o nav-icon"></i>
+            <span class="nav-text">我的</span>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.6/js/bootstrap.bundle.min.js"
+        th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+    let currentPage = 0;
+    let isLoading = false;
+    let hasMore = true;
+    // 缓存搜索的内容
+    let searchContent = '';
+
+    // 加载更多笔记
+    loadMoreNotes();
+
+    // 加载更多笔记
+    function loadMoreNotes() {
+        if (isLoading || !hasMore) {
+            // 隐藏加载更多
+            hideLoadMore();
+            // 显示没有更多内容
+            showNoMoreContent();
+            return;
+        }
+
+        isLoading = true;
+        // 显示加载更多
+        showLoadMore();
+
+        // 获取当前分类
+        let category = document.querySelector('.category-item.active').textContent.trim();
+
+        // 发送请求
+        /*fetch(`/explore/note?page=${currentPage + 1}&category=${category}`)*/
+        fetch(`/explore/note?page=${currentPage + 1}&category=${category}&query=${searchContent}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.notes && data.notes.length > 0) {
+                    currentPage++;
+                    // 添加笔记列表到网格布局中
+                    appendNotes(data.notes);
+                    hasMore = data.hasMore;
+                } else {
+                    hasMore = false;
+                }
+
+                isLoading = false;
+                // 隐藏加载更多
+                hideLoadMore();
+
+                if (!hasMore) {
+                    // 显示没有更多内容
+                    showNoMoreContent();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                isLoading = false;
+                // 隐藏加载更多
+                hideLoadMore();
+            });
+    }
+
+    // 隐藏加载更多
+    function hideLoadMore() {
+        document.getElementById("loadMore").style.display = "none";
+    }
+
+    // 显示没有更多内容
+    function showNoMoreContent() {
+        document.getElementById("noMoreContent").style.display = "block";
+    }
+
+    // 显示加载更多
+    function showLoadMore() {
+        document.getElementById("loadMore").style.display = "block";
+    }
+
+    const notesGrid = document.getElementById("notesGrid");
+    // 添加笔记列表到网格布局中
+    function appendNotes(notes) {
+        for (let i = 0; i < notes.length; i++) {
+            const note = notes[i];
+
+            // 创建笔记卡片元素
+            const noteElement = createNoteElement(note);
+
+            notesGrid.appendChild(noteElement);
+        }
+    }
+
+    // 创建笔记卡片元素
+    function createNoteElement(note) {
+        // 判定笔记是否点赞，来设置点赞图标的样式
+        let likeIconClass = note.liked ? "fa fa-heart like-btn liked" : "fa fa-heart-o like-btn";
+
+        const noteElement = document.createElement("div");
+        noteElement.className = "masonry-item";
+        noteElement.innerHTML = `
+            <!--<div class="note-image-container">-->
+                <!-- 点击跳转到笔记详情页 -->
+                <a href="/note/${note.noteId}">
+                    <!--<img class="note-image" src="${note.cover}" alt="${note.title}">-->
+                    <img class="masonry-note-image" src="${note.cover}" alt="${note.title}">
+                </a>
+            <!--</div>-->
+            <div class="note-content">
+                <div class="note-title">${note.title}</div>
+                <div class="note-author-stats">
+                    <!-- 点击跳转到用户详情页 -->
+                    <a href="/user/profile/${note.userId}">
+                        <div class="note-author">
+                            <img class="author-avatar" src="${note.avatar ? note.avatar : '/images/rn_avatar.png'}" alt="${note.username}">
+                            <span class="author-name">${note.username}</span>
+                        </div>
+                    </a>
+
+                    <div class="note-stats">
+                        <div class="stat-item">
+                            <!--<i class="fa fa-heart-o">${numberFormat(1024)}</i>-->
+                            <i class="${likeIconClass}" data-node-id="${note.noteId}"
+                                onclick="handleLike(this)">${numberFormat(note.likeCount)}</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return noteElement;
+    }
+
+
+    const categoryItems = document.querySelectorAll('.category-item');
+
+    // 为分页导航添加点击事件
+    categoryItems.forEach(item => {
+        item.addEventListener('click', () => {
+            categoryItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            item.classList.add('active');
+
+            // 以下代码重构为performSearch()
+            /*
+            // 重置笔记网格数据
+            notesGrid.innerHTML = '';
+
+            // 恢复初始状态值
+            currentPage = 0;
+            isLoading = false;
+            hasMore = true;
+            loadMoreNotes();
+            */
+            performSearch();
+
+        });
+    });
+
+    // 监听滚动事件
+    window.addEventListener('scroll', function() {
+        console.log('scroll');
+
+        if (isLoading || !hasMore) {
+            return;
+        }
+
+        console.log('scroll before');
+
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+
+        console.log('scrollTop: ' + scrollTop);
+        console.log('windowHeight: ' + windowHeight);
+        console.log('documentHeight: ' + documentHeight);
+
+        if (scrollTop + windowHeight >= documentHeight - 300) {
+            loadMoreNotes();
+        }
+
+        console.log('scroll after');
+    });
+
+    // 数字格式化，自动转换为k、w单位
+    function numberFormat(num) {
+        if (num > 100000) {
+            return (num / 10000).toFixed(1) + 'w';
+        } else if (num > 1000) {
+            return (num / 1000).toFixed(1) + 'k';
+        } else {
+            return num;
+        }
+    };
+
+    // 获取搜索输入框的值
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+         searchContent = this.value;
+    });
+
+    // 搜索按钮执行搜索
+    document.getElementById('searchButton').addEventListener('click', function() {
+        // 获取搜索输入框的值
+        searchContent = document.getElementById('searchInput').value;
+
+        // 执行搜索
+        performSearch();
+    });
+
+    // 执行搜索
+    function performSearch() {
+        // 重置笔记网格数据
+        notesGrid.innerHTML = '';
+
+        // 恢复初始状态值
+        currentPage = 0;
+        isLoading = false;
+        hasMore = true;
+
+        // 加载更多笔记
+        loadMoreNotes();
+    };
+
+    // 导航函数
+    function navigateTo(page) {
+        console.log('navigateTo: ' + page);
+
+        if (page === 'home') {
+            window.location.href = '/';
+        } else if (page === 'publish') {
+            window.location.href = '/note/publish';
+        } else if (page === 'profile') {
+            window.location.href = '/user/profile';
+        } else {
+            // 待实现的功能页面
+            alert('暂未开放，敬请期待！');
+
+            return;
+        }
+    }
+
+    // 点赞按钮的点击事件处理函数
+    function handleLike(element) {
+        // 从data-*获取笔记ID
+        const noteId = element.dataset.nodeId;
+
+        // 禁用按钮放置重复点击
+        element.disabled = true;
+
+        // 发送请求
+        fetch(`/like/${noteId}`, {
+            method: 'POST',
+            // 添加请求头, 用于Spring Security CSRF
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.liked) {
+                // 设置按钮为点赞样式
+                element.classList.remove('fa-heart-o');
+                element.classList.add('fa-heart');
+                element.classList.add('liked');
+            } else {
+                // 恢复按钮为未点赞样式
+                element.classList.remove('fa-heart');
+                element.classList.remove('liked');
+                element.classList.add('fa-heart-o');
+            }
+
+            // 点赞量显示处理
+            element.textContent = numberFormat(data.likeCount);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('点赞失败，请稍后再试');
+        });
+
+        // 启用按钮
+        element.disabled = false;
+    }
+</script>
+</body>
+</html>

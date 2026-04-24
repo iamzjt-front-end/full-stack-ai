@@ -1,0 +1,38 @@
+package com.waylau.rednote.repository;
+
+import com.waylau.rednote.entity.User;
+import org.springframework.data.repository.Repository;
+
+import java.util.Optional;
+
+/**
+ * UserRepository 用户资源库
+ *
+ * @author <a href="https://waylau.com">Way Lau</a>
+ * @version 2025/08/16
+ **/
+public interface UserRepository extends Repository<User, Long> {
+    /**
+     * 保存用户
+     *
+     * @param user
+     * @return
+     */
+    User save(User user);
+
+    /**
+     * 根据手机号查找用户
+     *
+     * @param phone
+     * @return
+     */
+    Optional<User> findByPhone(String phone);
+
+    /**
+     * 根据用户名查找用户
+     *
+     * @param username
+     * @return
+     */
+    Optional<User> findByUsername(String username);
+}

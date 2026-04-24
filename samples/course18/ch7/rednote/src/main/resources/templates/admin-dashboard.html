@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--定义片段-->
+<div th:fragment="admin-dashboard">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h2>数据看板</h2>
+        </div>
+        <div class="card-body">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    用户总数
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${userCount}">
+                                    0
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    笔记总数
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${noteCount}">
+                                    0
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa fa-file-text fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    评论总数
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${commentCount}">
+                                    0
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fa fa-comments fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    访问量排行
+                                </div>
+
+                                <ol class="list-group list-group-numbered">
+                                    <li class="list-group-item d-flex justify-content-between align-item-start" th:each="note:${noteBrowseCountDtoList}">
+                                        <div class="ms-2 me-auto" th:text="${note.title}">
+                                        </div>
+                                        <span class="badge text-bg-primary rounded-pill" th:text="${note.browseCount}">
+                                        </span>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    访问时长排行
+                                </div>
+
+                                <ol class="list-group list-group-numbered">
+                                    <li class="list-group-item d-flex justify-content-between align-item-start" th:each="note:${noteBrowseTimeDtoList}">
+                                        <div class="ms-2 me-auto" th:text="${note.title}">
+                                        </div>
+                                        <span class="badge text-bg-primary rounded-pill" th:text="${note.browseTime}">
+                                        </span>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

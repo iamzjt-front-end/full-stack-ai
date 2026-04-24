@@ -1,0 +1,21 @@
+services:
+  nginx-server-1:
+    image: nginx:latest
+    hostname: nginx-server-1
+    container_name: nginx-server-1
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    ports:
+      - "80:81"
+  nginx-server-2:
+    image: nginx:latest
+    hostname: nginx-server-2
+    container_name: nginx-server-2
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    ports:
+      - "80:82"    

@@ -1,0 +1,23 @@
+package com.waylau.rednote.repository;
+
+import com.waylau.rednote.entity.Like;
+import org.springframework.data.repository.Repository;
+
+import java.util.Optional;
+
+/**
+ * LikeRepository 点赞资源库
+ *
+ * @author <a href="https://waylau.com">Way Lau</a>
+ * @version 2025/08/21
+ **/
+public interface LikeRepository extends Repository<Like, Long> {
+
+    Like save(Like like);
+
+    void delete(Like like);
+
+    Optional<Like> findByUserUserIdAndNoteNoteId(Long userId, Long noteId);
+
+    long countByNoteNoteId(Long noteId);
+}

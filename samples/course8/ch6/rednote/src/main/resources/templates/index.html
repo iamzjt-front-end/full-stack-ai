@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RN - 首页</title>
+</head>
+<body>
+<h1>这是首页</h1>
+
+<!-- 登录用户信息 -->
+<div class="card" sec:authorize="isAuthenticated()">
+    <div class="card-header">
+        用户信息
+    </div>
+    <div class="card-body">
+        <dive class="row">
+            <div class="col-md-9">
+                <h5 class="card-title" sec:authentication="name"></h5>
+                <p class="card-text">角色： <span sec:authentication="principal.authorities">[角色]</span></p>
+            </div>
+        </dive>
+    </div>
+
+    <div sec:authorize="hasRole('ADMIN')">
+        这部分内容只有管理员能看到
+    </div>
+
+    <div sec:authorize="hasAnyRole('ADMIN', 'USER')">
+        这部分内容管理员和普通用户能看到
+    </div>
+
+    <!-- 注销 -->
+    <form action="/logout" th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-success">退出</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--定义片段-->
+<div th:fragment="admin-user-edit">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h2>编辑/新增用户</h2>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/user}" method="post" th:object="${user}">
+                <!--隐藏ID字段-->
+                <input type="hidden" th:field="*{id}">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label for="name">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" id="name" th:field="*{name}" class="form-control"
+                                   placeholder="请输入用户名"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" id="email" th:field="*{email}" class="form-control"
+                                   placeholder="请输入邮箱"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary mr-2">保存</button>
+                    <button type="button" class="btn btn-secondary mr-2" th:onclick="history.back()">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
