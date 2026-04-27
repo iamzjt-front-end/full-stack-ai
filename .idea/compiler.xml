@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="spring-mvc-json-tomcat-embed" />
+        <module name="spring-jdbc-template" />
+        <module name="spring-mvc-thymeleaf" />
+        <module name="spring-transaction-propagation" />
+        <module name="spring-data-jpa-h2" />
+        <module name="spring-data-mongodb" />
+        <module name="spring-dependency-injection" />
+        <module name="servlet-rest-api-service" />
+        <module name="spring-aop-aspect" />
+        <module name="spring-declarative-transaction" />
+        <module name="spring-mvc-json" />
+        <module name="spring-security-web" />
+        <module name="spring-hello-world" />
+        <module name="spring-integration-test" />
+      </profile>
+      <profile name="Annotation profile for rednote" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
+        </processorPath>
+        <module name="rednote (2)" />
+        <module name="rednote (1)" />
+        <module name="rednote (4)" />
+        <module name="rednote (3)" />
+        <module name="rednote (5)" />
+        <module name="rednote" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="rednote" options="-parameters" />
+      <module name="rednote (1)" options="-parameters" />
+      <module name="rednote (2)" options="-parameters" />
+      <module name="rednote (3)" options="-parameters" />
+      <module name="rednote (4)" options="-parameters" />
+      <module name="rednote (5)" options="-parameters" />
+    </option>
+  </component>
+</project>

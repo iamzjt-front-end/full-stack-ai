@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/samples/course2/ch1/spring-hello-world/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch1/spring-hello-world/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch2/spring-aop-aspect/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch2/spring-aop-aspect/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch2/spring-dependency-injection/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch2/spring-dependency-injection/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch3/spring-integration-test/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch3/spring-integration-test/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch4/spring-jdbc-template/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch4/spring-jdbc-template/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch5/spring-declarative-transaction/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch5/spring-declarative-transaction/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch5/spring-transaction-propagation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course2/ch5/spring-transaction-propagation/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course3/ch2/servlet-rest-api-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course3/ch2/servlet-rest-api-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course3/ch5/spring-mvc-json-tomcat-embed/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course3/ch5/spring-mvc-json-tomcat-embed/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course3/ch5/spring-mvc-json/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course3/ch5/spring-mvc-json/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course4/ch5/spring-mvc-thymeleaf/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course4/ch5/spring-mvc-thymeleaf/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course5/ch3/spring-data-jpa-h2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course5/ch3/spring-data-jpa-h2/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course5/ch4/spring-data-mongodb/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course5/ch4/spring-data-mongodb/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course6/ch5/spring-security-web/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course6/ch5/spring-security-web/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course8/ch3/rednote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course8/ch4/rednote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course8/ch5/rednote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course8/ch6/rednote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course8/ch7/rednote/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/course8/ch8/rednote/src/main/java" charset="UTF-8" />
+  </component>
+</project>
