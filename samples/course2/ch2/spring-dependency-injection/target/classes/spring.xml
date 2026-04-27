@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 定义 bean -->
+    <bean id="messageServiceImpl"
+          class="com.waylau.spring.di.service.MessageServiceImpl">
+        <constructor-arg name="username" value="Way Lau" />
+        <constructor-arg name="position" value="Java Full Stack Developer" />
+    </bean>
+
+    <bean id="messagePrinter" class="com.waylau.spring.di.MessagePrinter">
+        <constructor-arg name="service" ref="messageServiceImpl" />
+    </bean>
+</beans>

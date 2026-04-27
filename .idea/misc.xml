@@ -1,4 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="KubernetesApiProvider">{}</component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="KubernetesApiProvider"><![CDATA[{}]]></component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/samples/course2/ch1/spring-hello-world/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course2/ch2/spring-aop-aspect/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course2/ch2/spring-dependency-injection/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course2/ch3/spring-integration-test/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course2/ch4/spring-jdbc-template/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course2/ch5/spring-declarative-transaction/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course2/ch5/spring-transaction-propagation/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course3/ch2/servlet-rest-api-service/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course3/ch5/spring-mvc-json/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course3/ch5/spring-mvc-json-tomcat-embed/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course4/ch5/spring-mvc-thymeleaf/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course5/ch3/spring-data-jpa-h2/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course5/ch4/spring-data-mongodb/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course6/ch5/spring-security-web/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch3/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch4/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch5/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch6/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch7/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch8/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch9/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch10/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch11/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch12/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch13/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch14/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course8/ch15/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course9/ch4/java-io-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course16/ch2/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course16/ch3/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course16/ch4/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course18/ch4/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course18/ch5/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course18/ch6/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course18/ch7/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course18/ch8/rednote/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course21/ch2/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course21/ch3/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course21/ch4/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course21/ch5/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course21/ch6/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course21/ch7/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course23/ch2/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course23/ch3/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/samples/course25/ch2/rednote-microservices/pom.xml" />
+        <option value="$PROJECT_DIR$/spring-hello-world/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_25" default="true" project-jdk-name="25" project-jdk-type="JavaSDK" />
 </project>

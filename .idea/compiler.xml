@@ -13,8 +13,10 @@
         <module name="spring-data-jpa-h2" />
         <module name="spring-data-mongodb" />
         <module name="spring-dependency-injection" />
+        <module name="java-io-demo" />
         <module name="servlet-rest-api-service" />
         <module name="spring-aop-aspect" />
+        <module name="spring-hello-world (1)" />
         <module name="spring-declarative-transaction" />
         <module name="spring-mvc-json" />
         <module name="spring-security-web" />
@@ -28,12 +30,92 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
         </processorPath>
-        <module name="rednote (2)" />
+        <module name="rednote (19)" />
+        <module name="rednote (15)" />
+        <module name="rednote (17)" />
+        <module name="rednote (11)" />
+        <module name="rednote (6)" />
+        <module name="rednote (13)" />
+        <module name="rednote (8)" />
         <module name="rednote (1)" />
-        <module name="rednote (4)" />
+        <module name="rednote (20)" />
         <module name="rednote (3)" />
-        <module name="rednote (5)" />
         <module name="rednote" />
+        <module name="rednote (18)" />
+        <module name="rednote (14)" />
+        <module name="rednote (9)" />
+        <module name="rednote (16)" />
+        <module name="rednote (10)" />
+        <module name="rednote (5)" />
+        <module name="rednote (7)" />
+        <module name="rednote (12)" />
+        <module name="rednote (2)" />
+        <module name="rednote (4)" />
+      </profile>
+      <profile name="Annotation profile for rednote-microservices" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
+        </processorPath>
+        <module name="rednote-common (5)" />
+        <module name="rednote-user-microservice (2)" />
+        <module name="rednote-common (1)" />
+        <module name="rednote-user-microservice (6)" />
+        <module name="rednote-ai-microservice" />
+        <module name="rednote-file-microservice (3)" />
+        <module name="rednote-file-microservice" />
+        <module name="rednote-admin-microservice (1)" />
+        <module name="rednote-file-microservice (7)" />
+        <module name="rednote-content-microservice (8)" />
+        <module name="rednote-admin-microservice" />
+        <module name="rednote-admin-microservice (5)" />
+        <module name="rednote-content-microservice (4)" />
+        <module name="rednote-gateway-microservice (3)" />
+        <module name="rednote-common (6)" />
+        <module name="rednote-user-microservice (1)" />
+        <module name="rednote-common (2)" />
+        <module name="rednote-user-microservice (5)" />
+        <module name="rednote-file-microservice (2)" />
+        <module name="rednote-gateway-microservice" />
+        <module name="rednote-admin-microservice (2)" />
+        <module name="rednote-file-microservice (6)" />
+        <module name="rednote-content-microservice (5)" />
+        <module name="rednote-admin-microservice (6)" />
+        <module name="rednote-gateway-microservice (4)" />
+        <module name="rednote-content-microservice (1)" />
+        <module name="rednote-gateway-microservice (6)" />
+        <module name="rednote-common (3)" />
+        <module name="rednote-user-microservice (4)" />
+        <module name="rednote-user-microservice (8)" />
+        <module name="rednote-file-microservice (5)" />
+        <module name="rednote-ai-microservice (2)" />
+        <module name="rednote-admin-microservice (3)" />
+        <module name="rednote-content-microservice (6)" />
+        <module name="rednote-gateway-microservice (1)" />
+        <module name="rednote-file-microservice (1)" />
+        <module name="rednote-admin-microservice (7)" />
+        <module name="rednote-common (7)" />
+        <module name="rednote-user-microservice" />
+        <module name="rednote-content-microservice (2)" />
+        <module name="rednote-gateway-microservice (5)" />
+        <module name="rednote-common (4)" />
+        <module name="rednote-gateway-microservice (7)" />
+        <module name="rednote-user-microservice (3)" />
+        <module name="rednote-user-microservice (7)" />
+        <module name="rednote-ai-microservice (1)" />
+        <module name="rednote-file-microservice (4)" />
+        <module name="rednote-common" />
+        <module name="rednote-file-microservice (8)" />
+        <module name="rednote-admin-microservice (4)" />
+        <module name="rednote-content-microservice (7)" />
+        <module name="rednote-content-microservice" />
+        <module name="rednote-gateway-microservice (2)" />
+        <module name="rednote-common (8)" />
+        <module name="rednote-content-microservice (3)" />
+        <module name="rednote-admin-microservice (8)" />
       </profile>
     </annotationProcessing>
   </component>
@@ -41,10 +123,90 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="rednote" options="-parameters" />
       <module name="rednote (1)" options="-parameters" />
+      <module name="rednote (10)" options="-parameters" />
+      <module name="rednote (11)" options="-parameters" />
+      <module name="rednote (12)" options="-parameters" />
+      <module name="rednote (13)" options="-parameters" />
+      <module name="rednote (14)" options="-parameters" />
+      <module name="rednote (15)" options="-parameters" />
+      <module name="rednote (16)" options="-parameters" />
+      <module name="rednote (17)" options="-parameters" />
+      <module name="rednote (18)" options="-parameters" />
+      <module name="rednote (19)" options="-parameters" />
       <module name="rednote (2)" options="-parameters" />
+      <module name="rednote (20)" options="-parameters" />
       <module name="rednote (3)" options="-parameters" />
       <module name="rednote (4)" options="-parameters" />
       <module name="rednote (5)" options="-parameters" />
+      <module name="rednote (6)" options="-parameters" />
+      <module name="rednote (7)" options="-parameters" />
+      <module name="rednote (8)" options="-parameters" />
+      <module name="rednote (9)" options="-parameters" />
+      <module name="rednote-admin-microservice" options="-parameters" />
+      <module name="rednote-admin-microservice (1)" options="-parameters" />
+      <module name="rednote-admin-microservice (2)" options="-parameters" />
+      <module name="rednote-admin-microservice (3)" options="-parameters" />
+      <module name="rednote-admin-microservice (4)" options="-parameters" />
+      <module name="rednote-admin-microservice (5)" options="-parameters" />
+      <module name="rednote-admin-microservice (6)" options="-parameters" />
+      <module name="rednote-admin-microservice (7)" options="-parameters" />
+      <module name="rednote-admin-microservice (8)" options="-parameters" />
+      <module name="rednote-ai-microservice" options="-parameters" />
+      <module name="rednote-ai-microservice (1)" options="-parameters" />
+      <module name="rednote-ai-microservice (2)" options="-parameters" />
+      <module name="rednote-common" options="-parameters" />
+      <module name="rednote-common (1)" options="-parameters" />
+      <module name="rednote-common (2)" options="-parameters" />
+      <module name="rednote-common (3)" options="-parameters" />
+      <module name="rednote-common (4)" options="-parameters" />
+      <module name="rednote-common (5)" options="-parameters" />
+      <module name="rednote-common (6)" options="-parameters" />
+      <module name="rednote-common (7)" options="-parameters" />
+      <module name="rednote-common (8)" options="-parameters" />
+      <module name="rednote-content-microservice" options="-parameters" />
+      <module name="rednote-content-microservice (1)" options="-parameters" />
+      <module name="rednote-content-microservice (2)" options="-parameters" />
+      <module name="rednote-content-microservice (3)" options="-parameters" />
+      <module name="rednote-content-microservice (4)" options="-parameters" />
+      <module name="rednote-content-microservice (5)" options="-parameters" />
+      <module name="rednote-content-microservice (6)" options="-parameters" />
+      <module name="rednote-content-microservice (7)" options="-parameters" />
+      <module name="rednote-content-microservice (8)" options="-parameters" />
+      <module name="rednote-file-microservice" options="-parameters" />
+      <module name="rednote-file-microservice (1)" options="-parameters" />
+      <module name="rednote-file-microservice (2)" options="-parameters" />
+      <module name="rednote-file-microservice (3)" options="-parameters" />
+      <module name="rednote-file-microservice (4)" options="-parameters" />
+      <module name="rednote-file-microservice (5)" options="-parameters" />
+      <module name="rednote-file-microservice (6)" options="-parameters" />
+      <module name="rednote-file-microservice (7)" options="-parameters" />
+      <module name="rednote-file-microservice (8)" options="-parameters" />
+      <module name="rednote-gateway-microservice" options="-parameters" />
+      <module name="rednote-gateway-microservice (1)" options="-parameters" />
+      <module name="rednote-gateway-microservice (2)" options="-parameters" />
+      <module name="rednote-gateway-microservice (3)" options="-parameters" />
+      <module name="rednote-gateway-microservice (4)" options="-parameters" />
+      <module name="rednote-gateway-microservice (5)" options="-parameters" />
+      <module name="rednote-gateway-microservice (6)" options="-parameters" />
+      <module name="rednote-gateway-microservice (7)" options="-parameters" />
+      <module name="rednote-microservices" options="-parameters" />
+      <module name="rednote-microservices (1)" options="-parameters" />
+      <module name="rednote-microservices (2)" options="-parameters" />
+      <module name="rednote-microservices (3)" options="-parameters" />
+      <module name="rednote-microservices (4)" options="-parameters" />
+      <module name="rednote-microservices (5)" options="-parameters" />
+      <module name="rednote-microservices (6)" options="-parameters" />
+      <module name="rednote-microservices (7)" options="-parameters" />
+      <module name="rednote-microservices (8)" options="-parameters" />
+      <module name="rednote-user-microservice" options="-parameters" />
+      <module name="rednote-user-microservice (1)" options="-parameters" />
+      <module name="rednote-user-microservice (2)" options="-parameters" />
+      <module name="rednote-user-microservice (3)" options="-parameters" />
+      <module name="rednote-user-microservice (4)" options="-parameters" />
+      <module name="rednote-user-microservice (5)" options="-parameters" />
+      <module name="rednote-user-microservice (6)" options="-parameters" />
+      <module name="rednote-user-microservice (7)" options="-parameters" />
+      <module name="rednote-user-microservice (8)" options="-parameters" />
     </option>
   </component>
 </project>
