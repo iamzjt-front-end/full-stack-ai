@@ -57,10 +57,6 @@ const escapeHtml = (value) => String(value)
 const displayDate = (date) => `${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
 const isoDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const todayIso = () => isoDate(new Date());
-const dateFromIso = (value) => {
-  const [year, month, day] = value.split("-").map(Number);
-  return new Date(year, month - 1, day);
-};
 const formatDuration = (seconds) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -166,30 +162,23 @@ function renderHeatmap() {
     const level = doneCount === 0 ? 0 : doneCount >= maxCount ? 4 : doneCount >= maxCount * .66 ? 3 : doneCount >= maxCount * .33 ? 2 : 1;
     const selected = selectedHeatmapDay === dateKey || activeFilter === `date:${dateKey}`;
     const isToday = dateKey === todayIso();
-    return `<button class="heat-cell${isToday ? " is-today" : ""}${selected ? " is-selected" : ""}" data-level="${level}" data-date="${dateKey}" type="button" role="listitem" title="${dateKey} · 学习 ${doneCount} 个视频" aria-label="${dateKey}，学习 ${doneCount} 个视频"><span>${doneCount || ""}</span></button>`;
+    return `<button class="heat-cell${isToday ? " is-today" : ""}${selected ? " is-selected" : ""}" data-level="${level}" data-date="${dateKey}" type="button" role="listitem" title="${dateKey} · 学习 ${doneCount} 个视频" aria-label="${dateKey}，学习 ${doneCount} 个视频"><span class="heat-date">${displayDate(date)}</span><span class="heat-count">${doneCount || "—"}</span></button>`;
   });
   heatmap.innerHTML = cells.join("");
   heatmap.querySelectorAll(".heat-cell").forEach((cell) => {
     cell.addEventListener("click", () => {
       const date = cell.dataset.date;
-      selectedHeatmapDay = selectedHeatmapDay === date ? null : date;
-      renderHeatmap();
+      const isSelected = selectedHeatmapDay === date;
+      selectedHeatmapDay = isSelected ? null : date;
+      activeFilter = isSelected ? "all" : `date:${date}`;
+      document.querySelectorAll(".filter").forEach((item) => item.setAttribute("aria-pressed", String(isSelected && item.dataset.filter === "all")));
+      render();
+      if (!isSelected) document.querySelector("#plan").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
   const activeDays = new Set(Object.values(completedAt)).size;
   const todayDone = tasks.filter((task) => completedAt[task.id] === todayIso()).length;
   document.querySelector("#heatmapSummary").textContent = `${activeDays} 天有学习记录 · 今日 ${todayDone} 个视频`;
-  const popover = document.querySelector("#heatmapPopover");
-  if (selectedHeatmapDay === null) {
-    popover.hidden = true;
-    return;
-  }
-  const selectedDate = dateFromIso(selectedHeatmapDay);
-  const selectedDone = tasks.filter((task) => completedAt[task.id] === selectedHeatmapDay).length;
-  popover.hidden = false;
-  document.querySelector("#heatmapPopoverTitle").textContent = `${selectedHeatmapDay} · ${displayDate(selectedDate)}`;
-  document.querySelector("#heatmapPopoverCount").textContent = `学习 ${selectedDone} 个视频`;
-  document.querySelector("#heatmapPopoverCopy").textContent = selectedDone ? "这些视频已计入当天学习记录" : "当天还没有完成记录";
 }
 
 function render() {
@@ -361,19 +350,6 @@ document.querySelector("#resetButton").addEventListener("click", () => {
   persistCurrent();
   render();
   scheduleCloudSync();
-});
-
-document.querySelector("#heatmapViewButton").addEventListener("click", () => {
-  if (selectedHeatmapDay === null) return;
-  activeFilter = `date:${selectedHeatmapDay}`;
-  document.querySelectorAll(".filter").forEach((item) => item.setAttribute("aria-pressed", "false"));
-  render();
-  document.querySelector("#plan").scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
-document.querySelector("#heatmapCloseButton").addEventListener("click", () => {
-  selectedHeatmapDay = null;
-  renderHeatmap();
 });
 
 syncButton.addEventListener("click", () => {
