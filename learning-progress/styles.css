@@ -96,6 +96,29 @@ h1 {
 .today-marker span { display: block; color: var(--muted); font-size: 12px; }
 .today-marker strong { display: block; margin-top: 5px; font-size: 18px; }
 
+.heatmap-section { margin: 0 0 42px; padding: 23px 0 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.heatmap-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
+.section-kicker { margin: 0 0 7px; color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .16em; }
+.heatmap-heading h2 { margin: 0; font-family: Georgia, "Songti SC", serif; font-size: 24px; font-weight: 500; }
+.heatmap-summary { margin: 0; color: var(--muted); font-size: 12px; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(15, 18px); gap: 7px; }
+.heat-cell { position: relative; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 4px; background: #e1e2dc; color: transparent; cursor: pointer; transition: transform 160ms ease, box-shadow 160ms ease; }
+.heat-cell[data-level="1"] { background: #c8dfd1; }
+.heat-cell[data-level="2"] { background: #94c3a8; }
+.heat-cell[data-level="3"] { background: #4e9b77; }
+.heat-cell[data-level="4"] { background: var(--accent); }
+.heat-cell:hover, .heat-cell:focus-visible { z-index: 1; transform: scale(1.22); outline: 0; box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px var(--accent); }
+.heat-cell.is-today { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--ink); }
+.heat-cell.is-selected { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--accent); }
+.heat-cell.is-today.is-selected { box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--ink), 0 0 0 5px var(--accent); }
+.heatmap-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 14px; color: var(--muted); font-size: 11px; }
+.heatmap-legend { display: inline-flex; align-items: center; gap: 5px; }
+.heatmap-legend i { display: block; width: 12px; height: 12px; border-radius: 3px; background: #e1e2dc; }
+.heatmap-legend i[data-level="1"] { background: #c8dfd1; }
+.heatmap-legend i[data-level="2"] { background: #94c3a8; }
+.heatmap-legend i[data-level="3"] { background: #4e9b77; }
+.heatmap-legend i[data-level="4"] { background: var(--accent); }
+
 .toolbar {
   position: sticky;
   z-index: 10;
@@ -209,6 +232,8 @@ h1 {
   .overview { grid-template-columns: 100px 1fr; gap: 18px; }
   .percentage { font-size: 48px; }
   .today-marker { grid-column: 1 / -1; padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+  .heatmap-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .heatmap-grid { grid-template-columns: repeat(9, 18px); }
   .toolbar { align-items: flex-start; }
   .toolbar-left { align-items: flex-start; flex-direction: column; gap: 8px; }
   .toolbar-actions { width: 100%; justify-content: space-between; }
