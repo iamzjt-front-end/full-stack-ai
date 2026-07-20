@@ -57,6 +57,14 @@ const escapeHtml = (value) => String(value)
 const displayDate = (date) => `${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
 const isoDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 const todayIso = () => isoDate(new Date());
+const ACTIVITY_START_KEY = "full-stack-ai-activity-start";
+const activityStartDate = (() => {
+  const today = todayIso();
+  const saved = localStorage.getItem(ACTIVITY_START_KEY);
+  if (saved && /^\d{4}-\d{2}-\d{2}$/.test(saved) && saved <= today) return saved;
+  localStorage.setItem(ACTIVITY_START_KEY, today);
+  return today;
+})();
 const formatDuration = (seconds) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -149,9 +157,11 @@ function updateOverview() {
 function renderHeatmap() {
   const heatmap = document.querySelector("#heatmap");
   const today = new Date();
-  const dates = Array.from({ length: 84 }, (_, index) => {
-    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    date.setDate(date.getDate() - (83 - index));
+  const start = new Date(`${activityStartDate}T00:00:00`);
+  const daysSinceStart = Math.max(0, Math.floor((today - start) / 86400000));
+  const dates = Array.from({ length: daysSinceStart + 1 }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(date.getDate() + index);
     return date;
   });
   const counts = dates.map((date) => tasks.filter((task) => completedAt[task.id] === isoDate(date)).length);
@@ -176,7 +186,7 @@ function renderHeatmap() {
       if (!isSelected) document.querySelector("#plan").scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
-  const activeDays = new Set(Object.values(completedAt)).size;
+  const activeDays = new Set(Object.values(completedAt).filter((date) => date >= activityStartDate)).size;
   const todayDone = tasks.filter((task) => completedAt[task.id] === todayIso()).length;
   document.querySelector("#heatmapSummary").textContent = `${activeDays} 天有学习记录 · 今日 ${todayDone} 个视频`;
 }
