@@ -46,8 +46,17 @@
         <p class="heatmap-summary" id="heatmapSummary">正在计算…</p>
       </div>
       <div class="heatmap-grid" id="heatmap" role="list" aria-label="45 天计划完成度"></div>
+      <aside class="heatmap-popover" id="heatmapPopover" hidden aria-live="polite">
+        <div>
+          <strong id="heatmapPopoverTitle">Day 01 · 07.20</strong>
+          <span id="heatmapPopoverCount">0 / 13 个视频</span>
+        </div>
+        <p id="heatmapPopoverCopy">当天完成度 0%</p>
+        <button class="popover-action" id="heatmapViewButton" type="button">查看当天任务 →</button>
+        <button class="popover-close" id="heatmapCloseButton" type="button" aria-label="关闭详情">×</button>
+      </aside>
       <div class="heatmap-footer">
-        <span>点击格子查看当天任务</span>
+        <span>点击格子查看日期与完成情况</span>
         <span class="heatmap-legend" aria-label="完成度图例"><i data-level="0"></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i></span>
       </div>
     </section>
