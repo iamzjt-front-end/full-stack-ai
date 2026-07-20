@@ -178,7 +178,9 @@ h1 {
 .week-number { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
 .week-title { margin: 0; font-family: Georgia, "Songti SC", serif; font-size: 25px; font-weight: 500; }
 .week-count, .chapter-count { color: var(--muted); font-size: 11px; }
-.collapse-indicator { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 52px; color: var(--muted); font-size: 10px; white-space: nowrap; }
+.collapse-indicator { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 70px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, .42); color: var(--muted); font-size: 10px; font-weight: 700; white-space: nowrap; transition: border-color 160ms ease, background 160ms ease, color 160ms ease; }
+.week-heading:hover .collapse-indicator, .chapter-heading:hover .collapse-indicator { border-color: rgba(22, 114, 74, .42); }
+.week-heading.is-collapsed .collapse-indicator, .chapter-heading.is-collapsed .collapse-indicator { border-color: rgba(22, 114, 74, .34); background: #dceee4; color: var(--accent); }
 .collapse-chevron { width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform 180ms ease; }
 .is-collapsed .collapse-chevron { transform: rotate(-45deg) translateY(2px); }
 .is-collapsed .collapse-label { color: var(--ink); font-weight: 700; }
