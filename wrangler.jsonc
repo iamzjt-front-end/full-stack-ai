@@ -1,0 +1,14 @@
+{
+  "name": "full-stack-ai-progress-sync",
+  "main": "cloudflare-progress-sync/src/index.mjs",
+  "compatibility_date": "2026-07-20",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "https://iamzjt-front-end.github.io"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "PROGRESS"
+    }
+  ]
+}

@@ -6,6 +6,18 @@
 - 任务严格来自本机课程目录的 479 个视频，按周和章节分组；每学完一个视频，点击对应圆形复选框即可。
 - 课程视频变化后，可运行 `node learning-progress/scripts/generate-data.mjs "/Users/iamzjt/Desktop/Java+AI全栈工程师体系课"` 重新生成任务数据。
 
+## Cloudflare 进度同步
+
+学习页面默认只在浏览器本地保存勾选状态。要跨设备同步：
+
+1. 在 Cloudflare Workers & Pages 中选择这个仓库，项目名填 `full-stack-ai-progress-sync`。
+2. Build command 填 `node --test cloudflare-progress-sync/tests/*.test.mjs learning-progress/tests/*.test.mjs`。
+3. Deploy command 填 `npx wrangler@latest deploy`，Root directory 留空。
+4. 首次部署成功后，在 Worker 的 Settings → Variables and Secrets 添加加密 secret：`SYNC_SECRET`，值由你自行生成。
+5. 打开 Worker 的 `/health` 确认在线；然后在学习页面点右上角“仅本地 · 设置同步”，填 Worker 根地址和同一个同步码。
+
+同步码只用于这一个进度 Worker，不是 GitHub Token，也不要提交到仓库。
+
 
 
 ## 课程资源
