@@ -1,5 +1,6 @@
 const PROGRESS_KEY = "learning-progress:v1";
 const ID_PATTERN = /^[a-f0-9]{12}$/;
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const MAX_COMPLETED_ITEMS = 1000;
 
 function allowedOrigins(env) {
@@ -67,6 +68,18 @@ export function normalizeCompleted(value) {
   return completed.sort();
 }
 
+export function normalizeCompletedAt(value, completed) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const completedAt = {};
+  for (const id of completed) {
+    if (value[id] !== undefined && (typeof value[id] !== "string" || !DATE_PATTERN.test(value[id]))) {
+      throw new TypeError("completedAt contains an invalid date");
+    }
+    if (value[id]) completedAt[id] = value[id];
+  }
+  return completedAt;
+}
+
 async function handleProgress(request, env, origin) {
   if (!env.SYNC_SECRET) {
     return jsonResponse({ error: "SYNC_SECRET is not configured" }, 503, origin);
@@ -81,6 +94,7 @@ async function handleProgress(request, env, origin) {
       version: 1,
       updatedAt: null,
       completed: [],
+      completedAt: {},
     }, 200, origin);
   }
 
@@ -93,8 +107,10 @@ async function handleProgress(request, env, origin) {
     }
 
     let completed;
+    let completedAt;
     try {
       completed = normalizeCompleted(body?.completed);
+      completedAt = normalizeCompletedAt(body?.completedAt, completed);
     } catch (error) {
       return jsonResponse({ error: error.message }, 400, origin);
     }
@@ -103,6 +119,7 @@ async function handleProgress(request, env, origin) {
       version: 1,
       updatedAt: new Date().toISOString(),
       completed,
+      completedAt,
     };
     await env.PROGRESS.put(PROGRESS_KEY, JSON.stringify(progress));
     return jsonResponse(progress, 200, origin);

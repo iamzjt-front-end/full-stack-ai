@@ -60,11 +60,21 @@ test("writes progress to KV and reads it back", async () => {
   const env = createEnvironment();
   const putResponse = await worker.fetch(progressRequest("PUT", {
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ completed: ["e919fafd823c", "3a6bbdf77e22"] }),
+    body: JSON.stringify({
+      completed: ["e919fafd823c", "3a6bbdf77e22"],
+      completedAt: {
+        "e919fafd823c": "2026-07-20",
+        "3a6bbdf77e22": "2026-07-21",
+      },
+    }),
   }), env);
   assert.equal(putResponse.status, 200);
   const saved = await putResponse.json();
   assert.deepEqual(saved.completed, ["3a6bbdf77e22", "e919fafd823c"]);
+  assert.deepEqual(saved.completedAt, {
+    "e919fafd823c": "2026-07-20",
+    "3a6bbdf77e22": "2026-07-21",
+  });
   assert.match(saved.updatedAt, /^\d{4}-\d{2}-\d{2}T/);
 
   const getResponse = await worker.fetch(progressRequest(), env);

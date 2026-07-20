@@ -25,15 +25,33 @@ export function normalizeEndpoint(value) {
   return url.toString().replace(/\/$/, "");
 }
 
-export function normalizeProgress(value, validIds) {
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+function localDateString(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+export function normalizeProgress(value, validIds, now = new Date()) {
   const validIdSet = validIds instanceof Set ? validIds : new Set(validIds);
   const completed = Array.isArray(value?.completed)
     ? [...new Set(value.completed.filter((id) => validIdSet.has(id)))]
     : [];
+  const fallbackDate = typeof value?.updatedAt === "string" && Number.isFinite(Date.parse(value.updatedAt))
+    ? value.updatedAt.slice(0, 10)
+    : localDateString(now);
+  const completedAt = {};
+  if (value?.completedAt && typeof value.completedAt === "object" && !Array.isArray(value.completedAt)) {
+    for (const id of completed) {
+      const date = value.completedAt[id];
+      completedAt[id] = typeof date === "string" && DATE_PATTERN.test(date) ? date : fallbackDate;
+    }
+  } else {
+    completed.forEach((id) => { completedAt[id] = fallbackDate; });
+  }
   const updatedAt = typeof value?.updatedAt === "string" && Number.isFinite(Date.parse(value.updatedAt))
     ? new Date(value.updatedAt).toISOString()
     : null;
-  return { version: 1, updatedAt, completed };
+  return { version: 2, updatedAt, completed, completedAt };
 }
 
 export function loadLocalProgress(storage, validIds, now = () => new Date().toISOString()) {
@@ -60,7 +78,7 @@ export function loadLocalProgress(storage, validIds, now = () => new Date().toIS
 
   return {
     exists: false,
-    state: { version: 1, updatedAt: null, completed: [] },
+    state: { version: 2, updatedAt: null, completed: [], completedAt: {} },
   };
 }
 
@@ -110,6 +128,6 @@ export function createProgressClient({ endpoint, secret, fetchImpl = fetch }) {
 
   return {
     get: () => request("GET"),
-    put: (completed) => request("PUT", { completed }),
+    put: (completed, completedAt) => request("PUT", { completed, completedAt }),
   };
 }

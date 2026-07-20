@@ -20,6 +20,7 @@ const tasks = course.videos;
 const validTaskIds = new Set(tasks.map((task) => task.id));
 const initialLocal = loadLocalProgress(localStorage, validTaskIds);
 const completed = new Set(initialLocal.state.completed);
+let completedAt = { ...(initialLocal.state.completedAt || {}) };
 let localState = initialLocal.state;
 let hasLocalState = initialLocal.exists;
 let localRevision = hasLocalState ? 1 : 0;
@@ -38,7 +39,6 @@ let syncClient = null;
 let syncTimer = null;
 let syncInFlight = false;
 
-const startDate = new Date(`${course.startDate}T00:00:00+08:00`);
 const syncButton = document.querySelector("#syncButton");
 const syncStatus = document.querySelector("#syncStatus");
 const syncDialog = document.querySelector("#syncDialog");
@@ -54,14 +54,13 @@ const escapeHtml = (value) => String(value)
   .replaceAll('"', "&quot;")
   .replaceAll("'", "&#039;");
 
-const dateForDay = (day) => {
-  const date = new Date(startDate);
-  date.setDate(date.getDate() + day - 1);
-  return date;
-};
-
 const displayDate = (date) => `${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
 const isoDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+const todayIso = () => isoDate(new Date());
+const dateFromIso = (value) => {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
 const formatDuration = (seconds) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -69,26 +68,12 @@ const formatDuration = (seconds) => {
   return hours ? `${hours}h ${String(minutes).padStart(2, "0")}m` : `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
 };
 
-const currentPlanDay = () => {
-  const today = new Date();
-  const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const localStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-  const elapsedDays = Math.floor((localToday - localStart) / 86400000) + 1;
-  return Math.min(course.targetDays, Math.max(1, elapsedDays));
-};
-
 const weekGroups = [...new Set(tasks.map((task) => task.week))].map((weekNumber) => {
   const weekTasks = tasks.filter((task) => task.week === weekNumber);
-  const chapterGroups = [...new Set(weekTasks.map((task) => task.chapter))].map((chapterNumber) => ({
-    number: chapterNumber,
-    title: weekTasks.find((task) => task.chapter === chapterNumber).chapterTitle,
-    tasks: weekTasks.filter((task) => task.chapter === chapterNumber),
-  }));
   return {
     number: weekNumber,
     title: weekTasks[0].weekTitle,
     tasks: weekTasks,
-    chapters: chapterGroups,
   };
 });
 
@@ -99,9 +84,10 @@ function setSyncStatus(message, state = "idle") {
 
 function persistCurrent(updatedAt = new Date().toISOString(), markChanged = true) {
   localState = saveLocalProgress(localStorage, {
-    version: 1,
+    version: 2,
     updatedAt,
     completed: [...completed],
+    completedAt,
   }, validTaskIds);
   hasLocalState = true;
   if (markChanged) localRevision += 1;
@@ -110,6 +96,7 @@ function persistCurrent(updatedAt = new Date().toISOString(), markChanged = true
 function replaceProgress(state) {
   completed.clear();
   state.completed.forEach((id) => completed.add(id));
+  completedAt = { ...(state.completedAt || {}) };
   localState = saveLocalProgress(localStorage, state, validTaskIds);
   hasLocalState = true;
   localRevision += 1;
@@ -121,18 +108,17 @@ function matches(task) {
   const done = completed.has(task.id);
   if (activeFilter === "open" && done) return false;
   if (activeFilter === "done" && !done) return false;
-  if (activeFilter.startsWith("day:") && task.plannedDay !== Number(activeFilter.slice(4))) return false;
+  if (activeFilter.startsWith("date:") && completedAt[task.id] !== activeFilter.slice(5)) return false;
   if (!searchQuery) return true;
   const haystack = `${task.title} ${task.chapterTitle} ${task.weekTitle}`.toLowerCase();
   return haystack.includes(searchQuery);
 }
 
 function taskMarkup(task) {
-  const date = dateForDay(task.plannedDay);
   const fileUrl = encodeURI(`file://${task.absolutePath}`);
   return `
     <article class="task${completed.has(task.id) ? " is-complete" : ""}" data-task-id="${task.id}">
-      <time class="task-date" datetime="${isoDate(date)}">Day ${String(task.plannedDay).padStart(2, "0")}<br>${displayDate(date)}</time>
+      <div class="task-context"><span>CH ${String(task.chapter).padStart(2, "0")}</span><small>${escapeHtml(task.chapterTitle)}</small></div>
       <input class="check" type="checkbox" aria-label="完成：${escapeHtml(task.title)}" ${completed.has(task.id) ? "checked" : ""} />
       <div>
         <h4 class="task-title"><a class="video-link" href="${fileUrl}" title="打开本地视频">${escapeHtml(task.title)}</a></h4>
@@ -160,49 +146,50 @@ function updateOverview() {
   document.querySelector("#progressFill").style.width = `${percent}%`;
   document.querySelector("[role=progressbar]").setAttribute("aria-valuenow", String(percent));
   const firstOpen = tasks.find((task) => !completed.has(task.id));
-  document.querySelector("#todayAdvice").textContent = firstOpen ? `继续 Day ${String(firstOpen.plannedDay).padStart(2, "0")}` : "全部完成，准备面试";
+  document.querySelector("#todayAdvice").textContent = firstOpen ? "继续下一项" : "全部完成，准备面试";
   renderHeatmap();
 }
 
 function renderHeatmap() {
   const heatmap = document.querySelector("#heatmap");
-  const currentDay = currentPlanDay();
-  const cells = Array.from({ length: course.targetDays }, (_, index) => {
-    const day = index + 1;
-    const dayTasks = tasks.filter((task) => task.plannedDay === day);
-    const doneCount = dayTasks.filter((task) => completed.has(task.id)).length;
-    const ratio = dayTasks.length ? doneCount / dayTasks.length : 0;
-    const level = doneCount === 0 ? 0 : ratio === 1 ? 4 : ratio >= .66 ? 3 : ratio >= .33 ? 2 : 1;
-    const date = dateForDay(day);
-    const selected = selectedHeatmapDay === day || activeFilter === `day:${day}`;
-    return `<button class="heat-cell${day === currentDay ? " is-today" : ""}${selected ? " is-selected" : ""}" data-level="${level}" data-day="${day}" type="button" role="listitem" title="Day ${String(day).padStart(2, "0")} · ${displayDate(date)} · ${doneCount} / ${dayTasks.length} 个视频" aria-label="Day ${String(day).padStart(2, "0")}，${displayDate(date)}，完成 ${doneCount} / ${dayTasks.length} 个视频"><span>${day}</span></button>`;
+  const today = new Date();
+  const dates = Array.from({ length: 84 }, (_, index) => {
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    date.setDate(date.getDate() - (83 - index));
+    return date;
+  });
+  const counts = dates.map((date) => tasks.filter((task) => completedAt[task.id] === isoDate(date)).length);
+  const maxCount = Math.max(1, ...counts);
+  const cells = dates.map((date, index) => {
+    const dateKey = isoDate(date);
+    const doneCount = counts[index];
+    const level = doneCount === 0 ? 0 : doneCount >= maxCount ? 4 : doneCount >= maxCount * .66 ? 3 : doneCount >= maxCount * .33 ? 2 : 1;
+    const selected = selectedHeatmapDay === dateKey || activeFilter === `date:${dateKey}`;
+    const isToday = dateKey === todayIso();
+    return `<button class="heat-cell${isToday ? " is-today" : ""}${selected ? " is-selected" : ""}" data-level="${level}" data-date="${dateKey}" type="button" role="listitem" title="${dateKey} · 学习 ${doneCount} 个视频" aria-label="${dateKey}，学习 ${doneCount} 个视频"><span>${doneCount || ""}</span></button>`;
   });
   heatmap.innerHTML = cells.join("");
   heatmap.querySelectorAll(".heat-cell").forEach((cell) => {
     cell.addEventListener("click", () => {
-      const day = Number(cell.dataset.day);
-      selectedHeatmapDay = selectedHeatmapDay === day ? null : day;
+      const date = cell.dataset.date;
+      selectedHeatmapDay = selectedHeatmapDay === date ? null : date;
       renderHeatmap();
     });
   });
-  const planDaysWithProgress = Array.from({ length: course.targetDays }, (_, index) => index + 1)
-    .filter((day) => tasks.some((task) => task.plannedDay === day && completed.has(task.id))).length;
-  const todayTasks = tasks.filter((task) => task.plannedDay === currentDay);
-  const todayDone = todayTasks.filter((task) => completed.has(task.id)).length;
-  document.querySelector("#heatmapSummary").textContent = `${planDaysWithProgress} / ${course.targetDays} 天有完成记录 · 今日 ${todayDone} / ${todayTasks.length}`;
+  const activeDays = new Set(Object.values(completedAt)).size;
+  const todayDone = tasks.filter((task) => completedAt[task.id] === todayIso()).length;
+  document.querySelector("#heatmapSummary").textContent = `${activeDays} 天有学习记录 · 今日 ${todayDone} 个视频`;
   const popover = document.querySelector("#heatmapPopover");
   if (selectedHeatmapDay === null) {
     popover.hidden = true;
     return;
   }
-  const selectedTasks = tasks.filter((task) => task.plannedDay === selectedHeatmapDay);
-  const selectedDone = selectedTasks.filter((task) => completed.has(task.id)).length;
-  const selectedDate = dateForDay(selectedHeatmapDay);
-  const selectedPercent = selectedTasks.length ? Math.round((selectedDone / selectedTasks.length) * 100) : 0;
+  const selectedDate = dateFromIso(selectedHeatmapDay);
+  const selectedDone = tasks.filter((task) => completedAt[task.id] === selectedHeatmapDay).length;
   popover.hidden = false;
-  document.querySelector("#heatmapPopoverTitle").textContent = `Day ${String(selectedHeatmapDay).padStart(2, "0")} · ${displayDate(selectedDate)}`;
-  document.querySelector("#heatmapPopoverCount").textContent = `${selectedDone} / ${selectedTasks.length} 个视频`;
-  document.querySelector("#heatmapPopoverCopy").textContent = `当天完成度 ${selectedPercent}%`;
+  document.querySelector("#heatmapPopoverTitle").textContent = `${selectedHeatmapDay} · ${displayDate(selectedDate)}`;
+  document.querySelector("#heatmapPopoverCount").textContent = `学习 ${selectedDone} 个视频`;
+  document.querySelector("#heatmapPopoverCopy").textContent = selectedDone ? "这些视频已计入当天学习记录" : "当天还没有完成记录";
 }
 
 function render() {
@@ -228,32 +215,7 @@ function render() {
     `;
 
     const weekItems = section.querySelector(".week-items");
-    for (const chapter of week.chapters) {
-      const visibleChapterTasks = chapter.tasks.filter(matches);
-      if (!visibleChapterTasks.length) continue;
-      const doneInChapter = chapter.tasks.filter((task) => completed.has(task.id)).length;
-      const chapterElement = document.createElement("section");
-      chapterElement.className = "chapter";
-      chapterElement.innerHTML = `
-        <button class="chapter-heading" type="button" aria-expanded="true">
-          <span class="chapter-index">CH ${String(chapter.number).padStart(2, "0")}</span>
-          <h3 class="chapter-title">${escapeHtml(chapter.title)}</h3>
-          <span class="chapter-count">${doneInChapter} / ${chapter.tasks.length}</span>
-          <span class="collapse-indicator" aria-hidden="true"><span class="collapse-label">收起</span><span class="collapse-chevron"></span></span>
-        </button>
-        <div class="chapter-items">${visibleChapterTasks.map(taskMarkup).join("")}</div>
-      `;
-
-      const chapterButton = chapterElement.querySelector(".chapter-heading");
-      const chapterItems = chapterElement.querySelector(".chapter-items");
-      chapterButton.addEventListener("click", () => {
-        const expanded = chapterButton.getAttribute("aria-expanded") === "true";
-        setCollapseState(chapterButton, !expanded);
-        chapterElement.classList.toggle("is-collapsed", expanded);
-        chapterItems.hidden = expanded;
-      });
-      weekItems.append(chapterElement);
-    }
+    weekItems.innerHTML = visibleWeekTasks.map(taskMarkup).join("");
 
     const weekButton = section.querySelector(".week-heading");
     weekButton.addEventListener("click", () => {
@@ -269,7 +231,13 @@ function render() {
   planRoot.querySelectorAll(".check").forEach((checkbox) => {
     checkbox.addEventListener("change", (event) => {
       const taskId = event.target.closest(".task").dataset.taskId;
-      event.target.checked ? completed.add(taskId) : completed.delete(taskId);
+      if (event.target.checked) {
+        completed.add(taskId);
+        completedAt[taskId] = todayIso();
+      } else {
+        completed.delete(taskId);
+        delete completedAt[taskId];
+      }
       persistCurrent();
       render();
       scheduleCloudSync();
@@ -286,7 +254,7 @@ function syncErrorMessage(error) {
 }
 
 async function uploadSnapshot(snapshot) {
-  const saved = normalizeProgress(await syncClient.put(snapshot), validTaskIds);
+  const saved = normalizeProgress(await syncClient.put(snapshot, completedAt), validTaskIds);
   if (!saved.updatedAt) throw new Error("云端返回的数据缺少更新时间");
   return saved;
 }
@@ -306,6 +274,7 @@ async function flushCloudSync() {
         localState = saveLocalProgress(localStorage, {
           ...saved,
           completed: snapshot,
+          completedAt,
         }, validTaskIds);
         setSyncStatus(`已同步 ${new Date(saved.updatedAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}`, "synced");
       }
@@ -358,7 +327,7 @@ async function initializeCloudSync() {
     if (decision === "upload-local") {
       const snapshot = [...completed];
       const saved = await uploadSnapshot(snapshot);
-      localState = saveLocalProgress(localStorage, { ...saved, completed: snapshot }, validTaskIds);
+      localState = saveLocalProgress(localStorage, { ...saved, completed: snapshot, completedAt }, validTaskIds);
       syncedRevision = localRevision;
       setSyncStatus("本机进度已同步", "synced");
       return;
@@ -388,6 +357,7 @@ document.querySelector("#searchInput").addEventListener("input", (event) => {
 document.querySelector("#resetButton").addEventListener("click", () => {
   if (!completed.size || !window.confirm(`确定清空全部 ${tasks.length} 个视频的学习进度吗？此操作会同步到云端。`)) return;
   completed.clear();
+  completedAt = {};
   persistCurrent();
   render();
   scheduleCloudSync();
@@ -395,7 +365,7 @@ document.querySelector("#resetButton").addEventListener("click", () => {
 
 document.querySelector("#heatmapViewButton").addEventListener("click", () => {
   if (selectedHeatmapDay === null) return;
-  activeFilter = `day:${selectedHeatmapDay}`;
+  activeFilter = `date:${selectedHeatmapDay}`;
   document.querySelectorAll(".filter").forEach((item) => item.setAttribute("aria-pressed", "false"));
   render();
   document.querySelector("#plan").scrollIntoView({ behavior: "smooth", block: "start" });
