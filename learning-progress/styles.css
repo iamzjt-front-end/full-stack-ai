@@ -193,7 +193,7 @@ h1 {
 
 .task {
   display: grid;
-  grid-template-columns: 120px 34px minmax(0, 1fr) 100px;
+  grid-template-columns: 210px 34px minmax(0, 1fr) 100px;
   gap: 20px;
   align-items: start;
   min-height: 82px;
@@ -203,7 +203,9 @@ h1 {
 }
 .task.is-complete { opacity: .48; }
 .task.is-complete .task-title { text-decoration: line-through; }
-.task-date { padding-top: 5px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.task-context { display: flex; flex-direction: column; gap: 5px; padding-top: 4px; color: var(--muted); font-size: 11px; }
+.task-context span { color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.task-context small { overflow: hidden; font-size: 11px; line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; }
 .check {
   position: relative;
   width: 27px;
@@ -263,8 +265,8 @@ h1 {
   .week-heading, .chapter-heading { grid-template-columns: 84px 1fr; }
   .week-count, .chapter-count { grid-column: 2; }
   .collapse-indicator { grid-column: 2; justify-content: flex-start; }
-  .task { grid-template-columns: 46px 28px 1fr; gap: 12px; }
-  .task-date { font-size: 9px; }
+  .task { grid-template-columns: 110px 28px 1fr; gap: 12px; }
+  .task-context small { font-size: 9px; }
   .video-meta { grid-column: 3; padding-top: 0; text-align: left; }
   .task-path { display: none; }
   .principles { flex-direction: column; gap: 4px; }
