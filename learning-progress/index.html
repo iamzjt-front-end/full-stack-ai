@@ -47,18 +47,45 @@
         </div>
         <input class="search" id="searchInput" type="search" placeholder="搜索视频标题或章节" aria-label="搜索视频标题或章节" />
       </div>
-      <button class="text-button" id="resetButton" type="button">重置进度</button>
+      <div class="toolbar-actions">
+        <button class="sync-button" id="syncButton" type="button"><span class="sync-dot" aria-hidden="true"></span><span id="syncStatus">仅本地 · 设置同步</span></button>
+        <button class="text-button" id="resetButton" type="button">重置进度</button>
+      </div>
     </div>
 
     <div id="plan"></div>
 
     <footer class="principles">
       <strong>进度规则</strong>
-      <span>479 个视频按原始时长均衡分配至 45 天；勾选状态只保存在当前浏览器本地。</span>
+      <span>479 个视频按原始时长均衡分配至 45 天；勾选状态默认保存在本机，也可以用 Cloudflare KV 同步。</span>
     </footer>
   </main>
 
+  <dialog class="sync-dialog" id="syncDialog">
+    <form id="syncForm" method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">Cloudflare KV Sync</p>
+          <h2>同步学习进度</h2>
+        </div>
+        <button class="dialog-close" id="closeSyncDialog" type="button" aria-label="关闭">×</button>
+      </div>
+      <p class="dialog-copy">填写你的 Worker 地址和同步码。同步码只会保存在当前浏览器会话中，并只发送给这个 Worker，不会接触 GitHub Token。</p>
+      <label class="field-label" for="workerUrl">Worker 地址</label>
+      <input class="field-input" id="workerUrl" type="url" placeholder="https://full-stack-ai-progress-sync.xxx.workers.dev" required />
+      <label class="field-label" for="syncSecret">同步码</label>
+      <input class="field-input" id="syncSecret" type="password" autocomplete="off" placeholder="填写你在 Cloudflare 设置的同步码" />
+      <p class="dialog-error" id="syncError" role="alert"></p>
+      <div class="dialog-actions">
+        <button class="text-button" id="disconnectSync" type="button">仅使用本机</button>
+        <span></span>
+        <button class="text-button" id="cancelSyncDialog" type="button">取消</button>
+        <button class="primary-button" type="submit">保存并同步</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="./data.js"></script>
-  <script src="./app.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
