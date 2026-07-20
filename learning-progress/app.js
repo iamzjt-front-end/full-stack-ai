@@ -26,6 +26,7 @@ let localRevision = hasLocalState ? 1 : 0;
 let syncedRevision = 0;
 let activeFilter = "all";
 let searchQuery = "";
+let selectedHeatmapDay = null;
 let endpoint = localStorage.getItem(ENDPOINT_KEY) || "";
 const legacySessionSecret = sessionStorage.getItem(SECRET_KEY);
 if (!localStorage.getItem(SECRET_KEY) && legacySessionSecret) {
@@ -120,7 +121,6 @@ function matches(task) {
   const done = completed.has(task.id);
   if (activeFilter === "open" && done) return false;
   if (activeFilter === "done" && !done) return false;
-  if (activeFilter === "today" && task.plannedDay !== currentPlanDay()) return false;
   if (activeFilter.startsWith("day:") && task.plannedDay !== Number(activeFilter.slice(4))) return false;
   if (!searchQuery) return true;
   const haystack = `${task.title} ${task.chapterTitle} ${task.weekTitle}`.toLowerCase();
@@ -141,6 +141,13 @@ function taskMarkup(task) {
       <div class="video-meta">${formatDuration(task.durationSeconds)}<br>视频 ${tasks.indexOf(task) + 1} / ${tasks.length}</div>
     </article>
   `;
+}
+
+function setCollapseState(button, expanded) {
+  button.setAttribute("aria-expanded", String(expanded));
+  button.classList.toggle("is-collapsed", !expanded);
+  const label = button.querySelector(".collapse-label");
+  if (label) label.textContent = expanded ? "收起" : "展开";
 }
 
 function updateOverview() {
@@ -167,15 +174,15 @@ function renderHeatmap() {
     const ratio = dayTasks.length ? doneCount / dayTasks.length : 0;
     const level = doneCount === 0 ? 0 : ratio === 1 ? 4 : ratio >= .66 ? 3 : ratio >= .33 ? 2 : 1;
     const date = dateForDay(day);
-    const selected = activeFilter === `day:${day}`;
+    const selected = selectedHeatmapDay === day || activeFilter === `day:${day}`;
     return `<button class="heat-cell${day === currentDay ? " is-today" : ""}${selected ? " is-selected" : ""}" data-level="${level}" data-day="${day}" type="button" role="listitem" title="Day ${String(day).padStart(2, "0")} · ${displayDate(date)} · ${doneCount} / ${dayTasks.length} 个视频" aria-label="Day ${String(day).padStart(2, "0")}，${displayDate(date)}，完成 ${doneCount} / ${dayTasks.length} 个视频"><span>${day}</span></button>`;
   });
   heatmap.innerHTML = cells.join("");
   heatmap.querySelectorAll(".heat-cell").forEach((cell) => {
     cell.addEventListener("click", () => {
-      activeFilter = `day:${cell.dataset.day}`;
-      document.querySelectorAll(".filter").forEach((item) => item.setAttribute("aria-pressed", "false"));
-      render();
+      const day = Number(cell.dataset.day);
+      selectedHeatmapDay = selectedHeatmapDay === day ? null : day;
+      renderHeatmap();
     });
   });
   const planDaysWithProgress = Array.from({ length: course.targetDays }, (_, index) => index + 1)
@@ -183,6 +190,19 @@ function renderHeatmap() {
   const todayTasks = tasks.filter((task) => task.plannedDay === currentDay);
   const todayDone = todayTasks.filter((task) => completed.has(task.id)).length;
   document.querySelector("#heatmapSummary").textContent = `${planDaysWithProgress} / ${course.targetDays} 天有完成记录 · 今日 ${todayDone} / ${todayTasks.length}`;
+  const popover = document.querySelector("#heatmapPopover");
+  if (selectedHeatmapDay === null) {
+    popover.hidden = true;
+    return;
+  }
+  const selectedTasks = tasks.filter((task) => task.plannedDay === selectedHeatmapDay);
+  const selectedDone = selectedTasks.filter((task) => completed.has(task.id)).length;
+  const selectedDate = dateForDay(selectedHeatmapDay);
+  const selectedPercent = selectedTasks.length ? Math.round((selectedDone / selectedTasks.length) * 100) : 0;
+  popover.hidden = false;
+  document.querySelector("#heatmapPopoverTitle").textContent = `Day ${String(selectedHeatmapDay).padStart(2, "0")} · ${displayDate(selectedDate)}`;
+  document.querySelector("#heatmapPopoverCount").textContent = `${selectedDone} / ${selectedTasks.length} 个视频`;
+  document.querySelector("#heatmapPopoverCopy").textContent = `当天完成度 ${selectedPercent}%`;
 }
 
 function render() {
@@ -202,6 +222,7 @@ function render() {
         <span class="week-number">Week ${String(week.number).padStart(2, "0")}</span>
         <h2 class="week-title">${escapeHtml(week.title)}</h2>
         <span class="week-count">${doneInWeek} / ${week.tasks.length} · ${formatDuration(weekHours)}</span>
+        <span class="collapse-indicator" aria-hidden="true"><span class="collapse-label">收起</span><span class="collapse-chevron"></span></span>
       </button>
       <div class="week-items"></div>
     `;
@@ -218,6 +239,7 @@ function render() {
           <span class="chapter-index">CH ${String(chapter.number).padStart(2, "0")}</span>
           <h3 class="chapter-title">${escapeHtml(chapter.title)}</h3>
           <span class="chapter-count">${doneInChapter} / ${chapter.tasks.length}</span>
+          <span class="collapse-indicator" aria-hidden="true"><span class="collapse-label">收起</span><span class="collapse-chevron"></span></span>
         </button>
         <div class="chapter-items">${visibleChapterTasks.map(taskMarkup).join("")}</div>
       `;
@@ -226,7 +248,8 @@ function render() {
       const chapterItems = chapterElement.querySelector(".chapter-items");
       chapterButton.addEventListener("click", () => {
         const expanded = chapterButton.getAttribute("aria-expanded") === "true";
-        chapterButton.setAttribute("aria-expanded", String(!expanded));
+        setCollapseState(chapterButton, !expanded);
+        chapterElement.classList.toggle("is-collapsed", expanded);
         chapterItems.hidden = expanded;
       });
       weekItems.append(chapterElement);
@@ -235,7 +258,8 @@ function render() {
     const weekButton = section.querySelector(".week-heading");
     weekButton.addEventListener("click", () => {
       const expanded = weekButton.getAttribute("aria-expanded") === "true";
-      weekButton.setAttribute("aria-expanded", String(!expanded));
+      setCollapseState(weekButton, !expanded);
+      section.classList.toggle("is-collapsed", expanded);
       weekItems.hidden = expanded;
     });
     planRoot.append(section);
@@ -367,6 +391,19 @@ document.querySelector("#resetButton").addEventListener("click", () => {
   persistCurrent();
   render();
   scheduleCloudSync();
+});
+
+document.querySelector("#heatmapViewButton").addEventListener("click", () => {
+  if (selectedHeatmapDay === null) return;
+  activeFilter = `day:${selectedHeatmapDay}`;
+  document.querySelectorAll(".filter").forEach((item) => item.setAttribute("aria-pressed", "false"));
+  render();
+  document.querySelector("#plan").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.querySelector("#heatmapCloseButton").addEventListener("click", () => {
+  selectedHeatmapDay = null;
+  renderHeatmap();
 });
 
 syncButton.addEventListener("click", () => {
