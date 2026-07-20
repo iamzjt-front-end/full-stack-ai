@@ -121,7 +121,6 @@ function matches(task) {
   const done = completed.has(task.id);
   if (activeFilter === "open" && done) return false;
   if (activeFilter === "done" && !done) return false;
-  if (activeFilter === "today" && task.plannedDay !== currentPlanDay()) return false;
   if (activeFilter.startsWith("day:") && task.plannedDay !== Number(activeFilter.slice(4))) return false;
   if (!searchQuery) return true;
   const haystack = `${task.title} ${task.chapterTitle} ${task.weekTitle}`.toLowerCase();
@@ -142,6 +141,13 @@ function taskMarkup(task) {
       <div class="video-meta">${formatDuration(task.durationSeconds)}<br>视频 ${tasks.indexOf(task) + 1} / ${tasks.length}</div>
     </article>
   `;
+}
+
+function setCollapseState(button, expanded) {
+  button.setAttribute("aria-expanded", String(expanded));
+  button.classList.toggle("is-collapsed", !expanded);
+  const label = button.querySelector(".collapse-label");
+  if (label) label.textContent = expanded ? "收起" : "展开";
 }
 
 function updateOverview() {
@@ -216,6 +222,7 @@ function render() {
         <span class="week-number">Week ${String(week.number).padStart(2, "0")}</span>
         <h2 class="week-title">${escapeHtml(week.title)}</h2>
         <span class="week-count">${doneInWeek} / ${week.tasks.length} · ${formatDuration(weekHours)}</span>
+        <span class="collapse-indicator" aria-hidden="true"><span class="collapse-label">收起</span><span class="collapse-chevron"></span></span>
       </button>
       <div class="week-items"></div>
     `;
@@ -232,6 +239,7 @@ function render() {
           <span class="chapter-index">CH ${String(chapter.number).padStart(2, "0")}</span>
           <h3 class="chapter-title">${escapeHtml(chapter.title)}</h3>
           <span class="chapter-count">${doneInChapter} / ${chapter.tasks.length}</span>
+          <span class="collapse-indicator" aria-hidden="true"><span class="collapse-label">收起</span><span class="collapse-chevron"></span></span>
         </button>
         <div class="chapter-items">${visibleChapterTasks.map(taskMarkup).join("")}</div>
       `;
@@ -240,7 +248,8 @@ function render() {
       const chapterItems = chapterElement.querySelector(".chapter-items");
       chapterButton.addEventListener("click", () => {
         const expanded = chapterButton.getAttribute("aria-expanded") === "true";
-        chapterButton.setAttribute("aria-expanded", String(!expanded));
+        setCollapseState(chapterButton, !expanded);
+        chapterElement.classList.toggle("is-collapsed", expanded);
         chapterItems.hidden = expanded;
       });
       weekItems.append(chapterElement);
@@ -249,7 +258,8 @@ function render() {
     const weekButton = section.querySelector(".week-heading");
     weekButton.addEventListener("click", () => {
       const expanded = weekButton.getAttribute("aria-expanded") === "true";
-      weekButton.setAttribute("aria-expanded", String(!expanded));
+      setCollapseState(weekButton, !expanded);
+      section.classList.toggle("is-collapsed", expanded);
       weekItems.hidden = expanded;
     });
     planRoot.append(section);
