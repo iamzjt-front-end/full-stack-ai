@@ -27,6 +27,11 @@ let syncedRevision = 0;
 let activeFilter = "all";
 let searchQuery = "";
 let endpoint = localStorage.getItem(ENDPOINT_KEY) || "";
+const legacySessionSecret = sessionStorage.getItem(SECRET_KEY);
+if (!localStorage.getItem(SECRET_KEY) && legacySessionSecret) {
+  localStorage.setItem(SECRET_KEY, legacySessionSecret);
+  sessionStorage.removeItem(SECRET_KEY);
+}
 let syncSecret = localStorage.getItem(SECRET_KEY) || "";
 let syncClient = null;
 let syncTimer = null;
