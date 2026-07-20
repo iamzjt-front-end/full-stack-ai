@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Java + AI 全栈 · 视频学习进度</title>
+  <link rel="stylesheet" href="./learning-progress.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">Java + AI Full-Stack / 45 Days</p>
+        <h1>学完一个，<br />点掉一个。</h1>
+        <p class="subtitle">任务严格来自课程目录中的真实视频。按周和章节展开，学完一个视频，就点掉一个。</p>
+      </div>
+      <div class="deadline">
+        <strong id="deadlineDate">09 月 02 日</strong>
+        <span id="planMeta">正在读取课程数据…</span>
+      </div>
+    </header>
+
+    <section class="overview" aria-label="总体学习进度">
+      <div class="percentage" id="percentage">0%</div>
+      <div>
+        <div class="progress-copy">
+          <span id="progressText">已完成 0 个视频</span>
+          <span id="remainingText">正在计算剩余时长</span>
+        </div>
+        <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="today-marker">
+        <span>当前建议</span>
+        <strong id="todayAdvice">加载中…</strong>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="filters" aria-label="筛选学习项">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">全部</button>
+          <button class="filter" type="button" data-filter="today" aria-pressed="false">今日计划</button>
+          <button class="filter" type="button" data-filter="open" aria-pressed="false">未完成</button>
+          <button class="filter" type="button" data-filter="done" aria-pressed="false">已完成</button>
+        </div>
+        <input class="search" id="searchInput" type="search" placeholder="搜索视频标题或章节" aria-label="搜索视频标题或章节" />
+      </div>
+      <button class="text-button" id="resetButton" type="button">重置进度</button>
+    </div>
+
+    <div id="plan"></div>
+
+    <footer class="principles">
+      <strong>进度规则</strong>
+      <span>479 个视频按原始时长均衡分配至 45 天；勾选状态只保存在当前浏览器本地。</span>
+    </footer>
+  </main>
+
+  <script src="./learning-progress-data.js"></script>
+  <script src="./learning-progress-app.js"></script>
+</body>
+</html>
