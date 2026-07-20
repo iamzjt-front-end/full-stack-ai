@@ -1,5 +1,5 @@
 {
-  "name": "full-stack-ai-progress-sync",
+  "name": "full-stack-ai",
   "main": "cloudflare-progress-sync/src/index.mjs",
   "compatibility_date": "2026-07-20",
   "workers_dev": true,
