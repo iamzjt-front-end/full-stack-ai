@@ -15,7 +15,7 @@
         <p class="subtitle">任务严格来自课程目录中的真实视频。按周和章节展开，学完一个视频，就点掉一个。</p>
       </div>
       <div class="deadline">
-        <strong id="deadlineDate">09 月 02 日</strong>
+        <strong id="deadlineDate">今日</strong>
         <span id="planMeta">正在读取课程数据…</span>
       </div>
     </header>
@@ -34,6 +34,21 @@
       <div class="today-marker">
         <span>当前建议</span>
         <strong id="todayAdvice">加载中…</strong>
+      </div>
+    </section>
+
+    <section class="heatmap-section" aria-label="每日计划完成度">
+      <div class="heatmap-heading">
+        <div>
+          <p class="section-kicker">45-DAY MAP</p>
+          <h2>每日计划完成度</h2>
+        </div>
+        <p class="heatmap-summary" id="heatmapSummary">正在计算…</p>
+      </div>
+      <div class="heatmap-grid" id="heatmap" role="list" aria-label="45 天计划完成度"></div>
+      <div class="heatmap-footer">
+        <span>点击格子查看当天任务</span>
+        <span class="heatmap-legend" aria-label="完成度图例"><i data-level="0"></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i></span>
       </div>
     </section>
 
@@ -70,7 +85,7 @@
         </div>
         <button class="dialog-close" id="closeSyncDialog" type="button" aria-label="关闭">×</button>
       </div>
-      <p class="dialog-copy">填写你的 Worker 地址和同步码。同步码只会保存在当前浏览器会话中，并只发送给这个 Worker，不会接触 GitHub Token。</p>
+      <p class="dialog-copy">填写你的 Worker 地址和同步码。同步码只会保存在这个浏览器中，并只发送给这个 Worker，不会接触 GitHub Token。</p>
       <label class="field-label" for="workerUrl">Worker 地址</label>
       <input class="field-input" id="workerUrl" type="url" placeholder="https://full-stack-ai-progress-sync.xxx.workers.dev" required />
       <label class="field-label" for="syncSecret">同步码</label>
