@@ -1,5 +1,5 @@
 window.COURSE_PROGRESS_DATA = {
-  "generatedAt": "2026-07-20T03:23:32.049Z",
+  "generatedAt": "2026-07-20T03:31:27.241Z",
   "sourceRoot": "/Users/iamzjt/Desktop/Java+AI全栈工程师体系课",
   "startDate": "2026-07-20",
   "targetDays": 45,

@@ -4,9 +4,9 @@ import { readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const progressRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const courseRoot = path.resolve(process.argv[2] || "/Users/iamzjt/Desktop/Java+AI全栈工程师体系课");
-const outputPath = path.join(repoRoot, "learning-progress-data.js");
+const outputPath = path.join(progressRoot, "data.js");
 const collator = new Intl.Collator("zh-CN", { numeric: true, sensitivity: "base" });
 
 async function listVideos(directory) {

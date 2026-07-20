@@ -2,9 +2,9 @@
 
 ## 个人学习进度
 
-- [打开 45 天 Java + AI 全栈视频进度表](learning-progress.html)
+- [打开 45 天 Java + AI 全栈视频进度表](learning-progress/index.html)
 - 任务严格来自本机课程目录的 479 个视频，按周和章节分组；每学完一个视频，点击对应圆形复选框即可。
-- 课程视频变化后，可运行 `node scripts/generate-learning-progress-data.mjs "/Users/iamzjt/Desktop/Java+AI全栈工程师体系课"` 重新生成任务数据。
+- 课程视频变化后，可运行 `node learning-progress/scripts/generate-data.mjs "/Users/iamzjt/Desktop/Java+AI全栈工程师体系课"` 重新生成任务数据。
 
 
 
