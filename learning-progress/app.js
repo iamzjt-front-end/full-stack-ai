@@ -27,7 +27,7 @@ let syncedRevision = 0;
 let activeFilter = "all";
 let searchQuery = "";
 let endpoint = localStorage.getItem(ENDPOINT_KEY) || "";
-let syncSecret = sessionStorage.getItem(SECRET_KEY) || "";
+let syncSecret = localStorage.getItem(SECRET_KEY) || "";
 let syncClient = null;
 let syncTimer = null;
 let syncInFlight = false;
@@ -116,6 +116,7 @@ function matches(task) {
   if (activeFilter === "open" && done) return false;
   if (activeFilter === "done" && !done) return false;
   if (activeFilter === "today" && task.plannedDay !== currentPlanDay()) return false;
+  if (activeFilter.startsWith("day:") && task.plannedDay !== Number(activeFilter.slice(4))) return false;
   if (!searchQuery) return true;
   const haystack = `${task.title} ${task.chapterTitle} ${task.weekTitle}`.toLowerCase();
   return haystack.includes(searchQuery);
@@ -148,6 +149,35 @@ function updateOverview() {
   document.querySelector("[role=progressbar]").setAttribute("aria-valuenow", String(percent));
   const firstOpen = tasks.find((task) => !completed.has(task.id));
   document.querySelector("#todayAdvice").textContent = firstOpen ? `继续 Day ${String(firstOpen.plannedDay).padStart(2, "0")}` : "全部完成，准备面试";
+  renderHeatmap();
+}
+
+function renderHeatmap() {
+  const heatmap = document.querySelector("#heatmap");
+  const currentDay = currentPlanDay();
+  const cells = Array.from({ length: course.targetDays }, (_, index) => {
+    const day = index + 1;
+    const dayTasks = tasks.filter((task) => task.plannedDay === day);
+    const doneCount = dayTasks.filter((task) => completed.has(task.id)).length;
+    const ratio = dayTasks.length ? doneCount / dayTasks.length : 0;
+    const level = doneCount === 0 ? 0 : ratio === 1 ? 4 : ratio >= .66 ? 3 : ratio >= .33 ? 2 : 1;
+    const date = dateForDay(day);
+    const selected = activeFilter === `day:${day}`;
+    return `<button class="heat-cell${day === currentDay ? " is-today" : ""}${selected ? " is-selected" : ""}" data-level="${level}" data-day="${day}" type="button" role="listitem" title="Day ${String(day).padStart(2, "0")} · ${displayDate(date)} · ${doneCount} / ${dayTasks.length} 个视频" aria-label="Day ${String(day).padStart(2, "0")}，${displayDate(date)}，完成 ${doneCount} / ${dayTasks.length} 个视频"><span>${day}</span></button>`;
+  });
+  heatmap.innerHTML = cells.join("");
+  heatmap.querySelectorAll(".heat-cell").forEach((cell) => {
+    cell.addEventListener("click", () => {
+      activeFilter = `day:${cell.dataset.day}`;
+      document.querySelectorAll(".filter").forEach((item) => item.setAttribute("aria-pressed", "false"));
+      render();
+    });
+  });
+  const planDaysWithProgress = Array.from({ length: course.targetDays }, (_, index) => index + 1)
+    .filter((day) => tasks.some((task) => task.plannedDay === day && completed.has(task.id))).length;
+  const todayTasks = tasks.filter((task) => task.plannedDay === currentDay);
+  const todayDone = todayTasks.filter((task) => completed.has(task.id)).length;
+  document.querySelector("#heatmapSummary").textContent = `${planDaysWithProgress} / ${course.targetDays} 天有完成记录 · 今日 ${todayDone} / ${todayTasks.length}`;
 }
 
 function render() {
@@ -337,7 +367,7 @@ document.querySelector("#resetButton").addEventListener("click", () => {
 syncButton.addEventListener("click", () => {
   workerUrlInput.value = endpoint;
   syncSecretInput.value = "";
-  syncSecretInput.placeholder = syncSecret ? "本次会话已填写；留空则不修改" : "填写你在 Cloudflare 设置的同步码";
+  syncSecretInput.placeholder = syncSecret ? "本浏览器已保存；留空则不修改" : "填写你在 Cloudflare 设置的同步码";
   syncError.textContent = "";
   syncDialog.showModal();
 });
@@ -353,7 +383,7 @@ syncForm.addEventListener("submit", async (event) => {
     syncSecret = syncSecretInput.value.trim() || syncSecret;
     if (!syncSecret) throw new TypeError("请填写同步码");
     localStorage.setItem(ENDPOINT_KEY, endpoint);
-    sessionStorage.setItem(SECRET_KEY, syncSecret);
+    localStorage.setItem(SECRET_KEY, syncSecret);
     syncDialog.close();
     await initializeCloudSync();
   } catch (error) {
@@ -363,7 +393,7 @@ syncForm.addEventListener("submit", async (event) => {
 
 document.querySelector("#disconnectSync").addEventListener("click", () => {
   localStorage.removeItem(ENDPOINT_KEY);
-  sessionStorage.removeItem(SECRET_KEY);
+  localStorage.removeItem(SECRET_KEY);
   endpoint = "";
   syncSecret = "";
   syncClient = null;
@@ -371,8 +401,8 @@ document.querySelector("#disconnectSync").addEventListener("click", () => {
   setSyncStatus("仅本地 · 设置同步", "idle");
 });
 
-const deadline = dateForDay(course.targetDays);
-document.querySelector("#deadlineDate").textContent = `${String(deadline.getMonth() + 1).padStart(2, "0")} 月 ${String(deadline.getDate()).padStart(2, "0")} 日`;
+const today = new Date();
+document.querySelector("#deadlineDate").textContent = `${String(today.getMonth() + 1).padStart(2, "0")} 月 ${String(today.getDate()).padStart(2, "0")} 日`;
 document.querySelector("#planMeta").textContent = `${tasks.length} 个视频 · ${formatDuration(course.totalDurationSeconds)} · 来自真实课程目录`;
 render();
 initializeCloudSync();
